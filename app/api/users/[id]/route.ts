@@ -54,7 +54,7 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { nome, cognome, username, email, password, ruolo_id, active } = body
+    const { nome, cognome, username, email, password, ruolo_id, active, valid_from, valid_until } = body
 
     // Verifica se l'utente esiste
     const existingUser = await pool.query('SELECT id FROM users WHERE id = $1', [id])
@@ -121,6 +121,14 @@ export async function PUT(
     if (active !== undefined) {
       updates.push(`active = $${paramIndex++}`)
       values.push(active)
+    }
+    if (valid_from !== undefined) {
+      updates.push(`valid_from = $${paramIndex++}`)
+      values.push(valid_from)
+    }
+    if (valid_until !== undefined) {
+      updates.push(`valid_until = $${paramIndex++}`)
+      values.push(valid_until)
     }
 
     if (updates.length === 0) {

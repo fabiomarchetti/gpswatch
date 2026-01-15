@@ -1,170 +1,249 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
-  ArrowLeft, Users, UserPlus, Edit2, Trash2, Check, X,
-  RefreshCw, Shield, Search, AlertTriangle
-} from 'lucide-react'
-import Sidebar from '@/components/Sidebar'
-import { getRoleEmoji } from '@/lib/permissions'
+  ArrowLeft,
+  Users,
+  UserPlus,
+  Edit2,
+  Trash2,
+  Check,
+  X,
+  RefreshCw,
+  Shield,
+  Search,
+  AlertTriangle,
+} from "lucide-react";
+import Sidebar from "@/components/Sidebar";
+import { getRoleEmoji } from "@/lib/permissions";
 
 interface User {
-  id: number
-  nome: string
-  cognome: string
-  username: string
-  email: string
-  active: boolean
-  ruolo_id: number
-  nome_ruolo: string
-  ruolo_descrizione: string
-  livello_accesso: number
-  created_at: string
-  updated_at: string
+  id: number;
+  nome: string;
+  cognome: string;
+  username: string;
+  email: string;
+  active: boolean;
+  ruolo_id: number;
+  nome_ruolo: string;
+  ruolo_descrizione: string;
+  livello_accesso: number;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Role {
-  id: number
-  nome_ruolo: string
-  descrizione: string
-  livello_accesso: number
+  id: number;
+  nome_ruolo: string;
+  descrizione: string;
+  livello_accesso: number;
 }
 
 const roles: Role[] = [
-  { id: 1, nome_ruolo: 'sviluppatore', descrizione: 'Accesso completo', livello_accesso: 5 },
-  { id: 2, nome_ruolo: 'animatore_digitale', descrizione: 'Gestione dispositivi', livello_accesso: 4 },
-  { id: 3, nome_ruolo: 'assistente_control', descrizione: 'Monitoraggio multi-utente', livello_accesso: 3 },
-  { id: 4, nome_ruolo: 'controllo_parentale', descrizione: 'Monitoraggio parenti', livello_accesso: 2 },
-  { id: 5, nome_ruolo: 'utente_base', descrizione: 'Solo propri dati', livello_accesso: 1 },
-]
+  {
+    id: 1,
+    nome_ruolo: "sviluppatore",
+    descrizione: "Accesso completo",
+    livello_accesso: 5,
+  },
+  {
+    id: 2,
+    nome_ruolo: "animatore_digitale",
+    descrizione: "Gestione dispositivi",
+    livello_accesso: 4,
+  },
+  {
+    id: 3,
+    nome_ruolo: "assistente_control",
+    descrizione: "Monitoraggio multi-utente",
+    livello_accesso: 3,
+  },
+  {
+    id: 4,
+    nome_ruolo: "controllo_parentale",
+    descrizione: "Monitoraggio parenti",
+    livello_accesso: 2,
+  },
+  {
+    id: 5,
+    nome_ruolo: "utente_base",
+    descrizione: "Solo propri dati",
+    livello_accesso: 1,
+  },
+];
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [editingUser, setEditingUser] = useState<User | null>(null)
-  const [editForm, setEditForm] = useState({
-    nome: '',
-    cognome: '',
-    username: '',
-    email: '',
-    password: '',
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editForm, setEditForm] = useState<{
+    nome: string;
+    cognome: string;
+    username: string;
+    email: string;
+    password: string;
+    ruolo_id: number;
+    active: boolean;
+    valid_from: string;
+    valid_until: string;
+  }>({
+    nome: "",
+    cognome: "",
+    username: "",
+    email: "",
+    password: "",
     ruolo_id: 1,
-    active: true
-  })
-  const [saving, setSaving] = useState(false)
-  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+    active: true,
+    valid_from: "",
+    valid_until: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/users')
-      const data = await response.json()
+      const response = await fetch("/api/users");
+      const data = await response.json();
       if (data.success) {
-        setUsers(data.users)
+        setUsers(data.users);
       }
     } catch (error) {
-      console.error('Errore caricamento utenti:', error)
+      console.error("Errore caricamento utenti:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    fetchUsers();
+  }, []);
+
+  const handleAdd = () => {
+    setEditingUser(null);
+    setEditForm({
+      nome: "",
+      cognome: "",
+      username: "",
+      email: "",
+      password: "",
+      ruolo_id: 1,
+      active: true,
+      valid_from: "",
+      valid_until: "",
+    });
+  };
 
   const handleEdit = (user: User) => {
-    setEditingUser(user)
+    setEditingUser(user);
     setEditForm({
       nome: user.nome,
       cognome: user.cognome,
       username: user.username,
-      email: user.email || '',
-      password: '',
+      email: user.email || "",
+      password: "",
       ruolo_id: user.ruolo_id,
-      active: user.active
-    })
-  }
+      active: user.active,
+    });
+  };
 
   const handleSave = async () => {
-    if (!editingUser) return
+    if (!editingUser) return;
 
-    setSaving(true)
+    setSaving(true);
     try {
       const response = await fetch(`/api/users/${editingUser.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm)
-      })
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        setMessage({ type: 'success', text: 'Operatore aggiornato con successo' })
-        setEditingUser(null)
-        fetchUsers()
+        setMessage({
+          type: "success",
+          text: "Operatore aggiornato con successo",
+        });
+        setEditingUser(null);
+        fetchUsers();
       } else {
-        setMessage({ type: 'error', text: data.error || 'Errore aggiornamento' })
+        setMessage({
+          type: "error",
+          text: data.error || "Errore aggiornamento",
+        });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Errore di connessione' })
+      setMessage({ type: "error", text: "Errore di connessione" });
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
 
-    setTimeout(() => setMessage(null), 3000)
-  }
+    setTimeout(() => setMessage(null), 3000);
+  };
 
   const handleDelete = async (userId: number) => {
     try {
       const response = await fetch(`/api/users/${userId}`, {
-        method: 'DELETE'
-      })
+        method: "DELETE",
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        setMessage({ type: 'success', text: 'Operatore eliminato' })
-        fetchUsers()
+        setMessage({ type: "success", text: "Operatore eliminato" });
+        fetchUsers();
       } else {
-        setMessage({ type: 'error', text: data.error || 'Errore eliminazione' })
+        setMessage({
+          type: "error",
+          text: data.error || "Errore eliminazione",
+        });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Errore di connessione' })
+      setMessage({ type: "error", text: "Errore di connessione" });
     }
 
-    setDeleteConfirm(null)
-    setTimeout(() => setMessage(null), 3000)
-  }
+    setDeleteConfirm(null);
+    setTimeout(() => setMessage(null), 3000);
+  };
 
-  const filteredUsers = users.filter(user =>
-    user.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.cognome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.nome_ruolo.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredUsers = users.filter(
+    (user) =>
+      user.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.cognome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.nome_ruolo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('it-IT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+    return new Date(dateStr).toLocaleDateString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const getRoleBadgeColor = (ruolo: string) => {
     switch (ruolo) {
-      case 'sviluppatore': return 'bg-purple-500/20 text-purple-300 border-purple-500/30'
-      case 'animatore_digitale': return 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-      case 'assistente_control': return 'bg-green-500/20 text-green-300 border-green-500/30'
-      case 'controllo_parentale': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30'
+      case "sviluppatore":
+        return "bg-purple-500/20 text-purple-300 border-purple-500/30";
+      case "animatore_digitale":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+      case "assistente_control":
+        return "bg-green-500/20 text-green-300 border-green-500/30";
+      case "controllo_parentale":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -181,7 +260,10 @@ export default function UsersPage() {
         <header className="relative z-10 bg-white/5 backdrop-blur-lg border-b border-white/10 px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="p-2 hover:bg-white/10 rounded-lg transition-all">
+              <Link
+                href="/dashboard"
+                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+              >
                 <ArrowLeft className="w-6 h-6 text-white" />
               </Link>
               <div>
@@ -189,7 +271,9 @@ export default function UsersPage() {
                   <Users className="w-8 h-8" />
                   Gestione Staff
                 </h1>
-                <p className="text-gray-400 mt-1">{users.length} operatori registrati</p>
+                <p className="text-gray-400 mt-1">
+                  {users.length} operatori registrati
+                </p>
               </div>
             </div>
 
@@ -209,7 +293,11 @@ export default function UsersPage() {
                 onClick={fetchUsers}
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all"
               >
-                <RefreshCw className={`w-5 h-5 text-white ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-5 h-5 text-white ${
+                    loading ? "animate-spin" : ""
+                  }`}
+                />
               </button>
 
               <Link
@@ -226,12 +314,18 @@ export default function UsersPage() {
         <div className="relative z-10 p-8">
           {/* Message */}
           {message && (
-            <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-              message.type === 'success'
-                ? 'bg-green-500/20 border border-green-500/30 text-green-300'
-                : 'bg-red-500/20 border border-red-500/30 text-red-300'
-            }`}>
-              {message.type === 'success' ? <Check className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+            <div
+              className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
+                message.type === "success"
+                  ? "bg-green-500/20 border border-green-500/30 text-green-300"
+                  : "bg-red-500/20 border border-red-500/30 text-red-300"
+              }`}
+            >
+              {message.type === "success" ? (
+                <Check className="w-5 h-5" />
+              ) : (
+                <AlertTriangle className="w-5 h-5" />
+              )}
               {message.text}
             </div>
           )}
@@ -241,13 +335,27 @@ export default function UsersPage() {
             <table className="w-full">
               <thead className="bg-white/5">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Operatore</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Username</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Ruolo</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-300">Stato</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Registrato</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-300">Azioni</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                    Operatore
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                    Username
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                    Email
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                    Ruolo
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-300">
+                    Stato
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                    Registrato
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-300">
+                    Azioni
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -267,27 +375,42 @@ export default function UsersPage() {
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-white/5 transition-colors">
+                    <tr
+                      key={user.id}
+                      className="hover:bg-white/5 transition-colors"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-lg">
                             {getRoleEmoji(user.nome_ruolo)}
                           </div>
                           <div>
-                            <div className="text-white font-semibold">{user.nome} {user.cognome}</div>
-                            <div className="text-gray-500 text-xs">ID: {user.id}</div>
+                            <div className="text-white font-semibold">
+                              {user.nome} {user.cognome}
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              ID: {user.id}
+                            </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-300 font-mono">{user.username}</span>
+                        <span className="text-gray-300 font-mono">
+                          {user.username}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-400">{user.email || '-'}</span>
+                        <span className="text-gray-400">
+                          {user.email || "-"}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getRoleBadgeColor(user.nome_ruolo)}`}>
-                          {user.nome_ruolo.replace('_', ' ')}
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${getRoleBadgeColor(
+                            user.nome_ruolo
+                          )}`}
+                        >
+                          {user.nome_ruolo.replace("_", " ")}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -302,7 +425,9 @@ export default function UsersPage() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-400 text-sm">{formatDate(user.created_at)}</span>
+                        <span className="text-gray-400 text-sm">
+                          {formatDate(user.created_at)}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
@@ -314,7 +439,7 @@ export default function UsersPage() {
                             <Edit2 className="w-4 h-4" />
                           </button>
 
-                          {user.username !== 'admin' && (
+                          {user.username !== "admin" && (
                             <>
                               {deleteConfirm === user.id ? (
                                 <div className="flex items-center gap-1">
@@ -366,82 +491,161 @@ export default function UsersPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-400 text-sm mb-1">Nome</label>
+                    <label className="block text-gray-400 text-sm mb-1">
+                      Nome
+                    </label>
                     <input
                       type="text"
                       value={editForm.nome}
-                      onChange={(e) => setEditForm({ ...editForm, nome: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, nome: e.target.value })
+                      }
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-1">Cognome</label>
+                    <label className="block text-gray-400 text-sm mb-1">
+                      Cognome
+                    </label>
                     <input
                       type="text"
                       value={editForm.cognome}
-                      onChange={(e) => setEditForm({ ...editForm, cognome: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, cognome: e.target.value })
+                      }
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Username</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Username
+                  </label>
                   <input
                     type="text"
                     value={editForm.username}
-                    onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, username: e.target.value })
+                    }
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Email</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Email
+                  </label>
                   <input
                     type="email"
                     value={editForm.email}
-                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, email: e.target.value })
+                    }
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Nuova Password (lascia vuoto per non cambiare)</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Nuova Password (lascia vuoto per non cambiare)
+                  </label>
                   <input
                     type="password"
                     value={editForm.password}
-                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, password: e.target.value })
+                    }
                     placeholder="••••••••"
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Ruolo</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Ruolo
+                  </label>
                   <select
                     value={editForm.ruolo_id}
-                    onChange={(e) => setEditForm({ ...editForm, ruolo_id: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        ruolo_id: parseInt(e.target.value),
+                      })
+                    }
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   >
                     {roles.map((role) => (
-                      <option key={role.id} value={role.id} className="bg-slate-800">
-                        {getRoleEmoji(role.nome_ruolo)} {role.nome_ruolo.replace('_', ' ')} - {role.descrizione}
+                      <option
+                        key={role.id}
+                        value={role.id}
+                        className="bg-slate-800"
+                      >
+                        {getRoleEmoji(role.nome_ruolo)}{" "}
+                        {role.nome_ruolo.replace("_", " ")} - {role.descrizione}
                       </option>
                     ))}
                   </select>
                 </div>
 
-                <div className="flex items-center gap-3">
+                {/* Date validità per visitatori */}
+                {(roles.find((r) => r.id === editForm.ruolo_id)?.nome_ruolo ===
+                  "visitatore" ||
+                  editForm.valid_from ||
+                  editForm.valid_until) && (
+                  <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-2">
+                    <div className="col-span-2 text-sm text-yellow-400 mb-1 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" />
+                      Accesso temporaneo (opzionale)
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-sm mb-1">
+                        Valido dal
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={editForm.valid_from}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            valid_from: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-sm mb-1">
+                        Valido fino al
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={editForm.valid_until}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            valid_until: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500 text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 mt-4">
                   <label className="text-gray-400 text-sm">Stato:</label>
                   <button
-                    onClick={() => setEditForm({ ...editForm, active: !editForm.active })}
+                    onClick={() =>
+                      setEditForm({ ...editForm, active: !editForm.active })
+                    }
                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                       editForm.active
-                        ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                        : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                        : "bg-red-500/20 text-red-300 border border-red-500/30"
                     }`}
                   >
-                    {editForm.active ? 'Attivo' : 'Disattivo'}
+                    {editForm.active ? "Attivo" : "Disattivo"}
                   </button>
                 </div>
               </div>
@@ -458,7 +662,11 @@ export default function UsersPage() {
                   disabled={saving}
                   className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2"
                 >
-                  {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  {saving ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
                   Salva
                 </button>
               </div>
@@ -467,5 +675,5 @@ export default function UsersPage() {
         )}
       </main>
     </div>
-  )
+  );
 }

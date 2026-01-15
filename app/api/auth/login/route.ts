@@ -44,6 +44,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verifica validità temporale (per visitatori o account a tempo)
+    const now = new Date()
+    if (user.valid_from && new Date(user.valid_from) > now) {
+      return NextResponse.json(
+        { error: 'Account non ancora attivo' },
+        { status: 403 }
+      )
+    }
+    if (user.valid_until && new Date(user.valid_until) < now) {
+      return NextResponse.json(
+        { error: 'Periodo di prova scaduto. Contatta l\'amministratore per estendere l\'accesso.' },
+        { status: 403 }
+      )
+    }
+
     // Verifica password con bcrypt
     const passwordMatch = await bcrypt.compare(password, user.password)
 

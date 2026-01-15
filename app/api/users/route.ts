@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const result = await pool.query(`
       SELECT
         u.id, u.nome, u.cognome, u.username, u.email, u.active,
+        u.valid_from, u.valid_until,
         u.created_at, u.updated_at,
         r.id as ruolo_id, r.nome_ruolo, r.descrizione as ruolo_descrizione, r.livello_accesso
       FROM users u
