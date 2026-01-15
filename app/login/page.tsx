@@ -138,9 +138,9 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-700">
               Non hai un account?{' '}
-              <Link href="/register" className="text-emerald-600 hover:text-emerald-700 font-bold underline transition-colors">
-                Registrati ora
-              </Link>
+              <span className="text-gray-500 font-medium cursor-not-allowed">
+                Contatta l'amministratore
+              </span>
             </p>
           </div>
         </div>

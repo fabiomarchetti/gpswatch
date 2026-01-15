@@ -22,13 +22,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      users: result.rows,
-      total: result.rows.length
+      users: result.rows
     })
   } catch (error: any) {
-    console.error('Errore recupero utenti:', error)
+    console.error('Error fetching users:', error) // Aggiunto log errore
     return NextResponse.json(
-      { error: 'Errore recupero utenti', details: error.message },
+      { error: 'Errore nel recupero degli utenti: ' + error.message }, // Ritorna messaggio errore
+      { status: 500 }
+    )
+  }
+},
       { status: 500 }
     )
   }
