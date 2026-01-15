@@ -318,13 +318,13 @@ export default function UsersPage() {
                 />
               </button>
 
-              <Link
-                href="/register"
+              <button
+                onClick={handleAdd}
                 className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold flex items-center gap-2 hover:opacity-90 transition-all"
               >
                 <UserPlus className="w-4 h-4" />
                 Nuovo Operatore
-              </Link>
+              </button>
             </div>
           </div>
         </header>
@@ -580,10 +580,6 @@ export default function UsersPage() {
                 </div>
 
                 <div>
-                  <div className="text-xs text-yellow-500 mb-1">
-                    DEBUG: ID={editForm.ruolo_id} Tipo=
-                    {typeof editForm.ruolo_id}
-                  </div>
                   <label className="block text-gray-400 text-sm mb-1">
                     Ruolo
                   </label>
