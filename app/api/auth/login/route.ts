@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import bcrypt from 'bcryptjs' // TEMPORANEO: disabilitato per password in chiaro
+import bcrypt from 'bcryptjs'
 import pool from '@/lib/db'
 
 export async function POST(request: NextRequest) {
@@ -16,12 +16,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Cerca utente nel database con JOIN per ottenere info ruolo
+    // Join su nome_ruolo perchè users.ruolo è una stringa
     const result = await pool.query(
       `SELECT
-        u.id, u.nome, u.cognome, u.username, u.password, u.email, u.active, u.ruolo_id,
-        r.nome_ruolo, r.descrizione as ruolo_descrizione, r.livello_accesso
+        u.id, u.nome, u.cognome, u.username, u.password, u.email, u.active,
+        r.id as ruolo_id, r.nome_ruolo, r.descrizione as ruolo_descrizione, r.livello_accesso
        FROM users u
-       JOIN ruoli r ON u.ruolo_id = r.id
+       LEFT JOIN ruoli r ON u.ruolo = r.nome_ruolo
        WHERE u.username = $1`,
       [username]
     )
@@ -43,8 +44,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verifica password - TEMPORANEO: confronto diretto (password in chiaro)
-    const passwordMatch = password === user.password
+    // Verifica password con bcrypt
+    const passwordMatch = await bcrypt.compare(password, user.password)
 
     if (!passwordMatch) {
       return NextResponse.json(
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Login successful - ritorna dati utente (senza password)
+    // Se il ruolo non è stato trovato nella tabella ruoli, forniamo valori di default
     return NextResponse.json(
       {
         message: 'Login effettuato con successo',
@@ -64,10 +66,10 @@ export async function POST(request: NextRequest) {
           username: user.username,
           email: user.email,
           ruolo: {
-            id: user.ruolo_id,
-            nome: user.nome_ruolo,
-            descrizione: user.ruolo_descrizione,
-            livello: user.livello_accesso,
+            id: user.ruolo_id || 0,
+            nome: user.nome_ruolo || user.ruolo || 'user',
+            descrizione: user.ruolo_descrizione || 'Utente standard',
+            livello: user.livello_accesso || 1,
           },
         },
       },
