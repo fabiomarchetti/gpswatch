@@ -287,7 +287,7 @@ export default function UsersPage() {
               <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                   <Users className="w-8 h-8" />
-                  Gestione Staff
+                  Gestione Staff (DEBUG V2)
                 </h1>
                 <p className="text-gray-400 mt-1">
                   {users.length} operatori registrati
