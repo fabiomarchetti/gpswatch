@@ -73,6 +73,12 @@ const roles: Role[] = [
     descrizione: "Solo propri dati",
     livello_accesso: 1,
   },
+  {
+    id: 7,
+    nome_ruolo: "visitatore",
+    descrizione: "Accesso temporaneo dimostrativo",
+    livello_accesso: 0,
+  },
 ];
 
 export default function UsersPage() {
