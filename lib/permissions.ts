@@ -20,6 +20,7 @@ export interface UserWithRuolo {
 
 // Livelli di accesso
 export const LIVELLI_ACCESSO = {
+  VISITATORE: 0,
   UTENTE_BASE: 1,
   CONTROLLO_PARENTALE: 2,
   ASSISTENTE_CONTROL: 3,
@@ -29,6 +30,7 @@ export const LIVELLI_ACCESSO = {
 
 // Nomi ruoli
 export const RUOLI = {
+  VISITATORE: 'visitatore',
   UTENTE_BASE: 'utente_base',
   CONTROLLO_PARENTALE: 'controllo_parentale',
   ASSISTENTE_CONTROL: 'assistente_control',
