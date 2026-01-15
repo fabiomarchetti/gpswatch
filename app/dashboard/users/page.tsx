@@ -580,6 +580,10 @@ export default function UsersPage() {
                 </div>
 
                 <div>
+                  <div className="text-xs text-yellow-500 mb-1">
+                    DEBUG: ID={editForm.ruolo_id} Tipo=
+                    {typeof editForm.ruolo_id}
+                  </div>
                   <label className="block text-gray-400 text-sm mb-1">
                     Ruolo
                   </label>
