@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(PGPASSWORD=\"GpsWatch2025\" psql:*)",
+      "Bash(ssh:*)",
+      "WebSearch",
+      "Bash(for table in users ruoli wearers devices device_config device_functions device_snapshots health_data health_metrics locations geofences alarms sms_logs sms_reminder_status unknown_commands user_relations)",
+      "Bash(do echo \"=== TABELLA: $table ===\")",
+      "Bash(done)",
+      "Bash(npm run build:*)",
+      "Bash(PGPASSWORD=GpsWatch2025 psql:*)",
+      "Bash(scp /tmp/vps_server_updated.js root@91.99.141.225:/root/gps-server/server.js)",
+      "Bash(scp:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(rsync:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}

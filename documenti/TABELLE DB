@@ -1,0 +1,20 @@
+TABELLE DB:
+
+Tabella	Righe
+alarms	0
+device_config	18
+device_functions	16
+device_snapshots	0
+devices	3
+geofences	0
+health_data	15
+health_metrics	0
+locations	77
+ruoli	5
+sms_logs	68
+sms_reminder_status	12
+tcp_command_logs	53
+unknown_commands	36
+user_relations	0
+users	2
+wearers	2

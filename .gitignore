@@ -1,0 +1,35 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Logs
+*.log
+sms_responses.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database dumps (opzionale - commentare se vuoi versionarli)
+# db_vps/*.sql

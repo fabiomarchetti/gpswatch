@@ -1,0 +1,40 @@
+{
+  "name": "gps-tracker",
+  "version": "1.0.0",
+  "description": "Sistema di monitoraggio GPS per orologi sanitari",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:local": "npm run tunnel && sleep 2 && next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "tunnel": "ssh -f -N -L 5433:localhost:5432 root@91.99.141.225 || echo 'Tunnel già attivo o errore connessione'",
+    "tunnel:check": "lsof -i :5433 | grep LISTEN || echo 'Tunnel NON attivo'",
+    "tunnel:kill": "lsof -ti :5433 | xargs kill -9 2>/dev/null && echo 'Tunnel chiuso' || echo 'Nessun tunnel da chiudere'"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.294.0",
+    "next": "^15.0.0",
+    "pg": "^8.11.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.10.0",
+    "@types/pg": "^8.10.9",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.3.0"
+  }
+}
