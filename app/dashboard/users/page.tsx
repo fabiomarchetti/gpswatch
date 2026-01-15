@@ -607,8 +607,9 @@ export default function UsersPage() {
                 </div>
 
                 {/* Date validità per visitatori */}
-                {(roles.find((r) => r.id === editForm.ruolo_id)?.nome_ruolo ===
-                  "visitatore" ||
+                {(editForm.ruolo_id === 7 ||
+                  roles.find((r) => r.id === editForm.ruolo_id)?.nome_ruolo ===
+                    "visitatore" ||
                   editForm.valid_from ||
                   editForm.valid_until) && (
                   <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-2">
