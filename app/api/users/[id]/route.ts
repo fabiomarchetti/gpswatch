@@ -15,11 +15,11 @@ export async function GET(
 
     const result = await pool.query(`
       SELECT
-        u.id, u.nome, u.cognome, u.username, u.email, u.active, u.ruolo_id,
+        u.id, u.nome, u.cognome, u.username, u.email, u.active,
         u.created_at, u.updated_at,
-        r.nome_ruolo, r.descrizione as ruolo_descrizione, r.livello_accesso
+        r.id as ruolo_id, r.nome_ruolo, r.descrizione as ruolo_descrizione, r.livello_accesso
       FROM users u
-      JOIN ruoli r ON u.ruolo_id = r.id
+      LEFT JOIN ruoli r ON u.ruolo = r.nome_ruolo
       WHERE u.id = $1
     `, [id])
 
@@ -106,8 +106,17 @@ export async function PUT(
       values.push(hashedPassword)
     }
     if (ruolo_id !== undefined) {
-      updates.push(`ruolo_id = $${paramIndex++}`)
-      values.push(ruolo_id)
+      // Recupera il nome del ruolo dall'ID
+      const roleResult = await pool.query(
+        'SELECT nome_ruolo FROM ruoli WHERE id = $1',
+        [ruolo_id]
+      )
+
+      if (roleResult.rows.length > 0) {
+        const nome_ruolo = roleResult.rows[0].nome_ruolo
+        updates.push(`ruolo = $${paramIndex++}`)
+        values.push(nome_ruolo)
+      }
     }
     if (active !== undefined) {
       updates.push(`active = $${paramIndex++}`)
@@ -125,9 +134,13 @@ export async function PUT(
     const result = await pool.query(
       `UPDATE users SET ${updates.join(', ')}, updated_at = NOW()
        WHERE id = $${paramIndex}
-       RETURNING id, nome, cognome, username, email, ruolo_id, active, updated_at`,
+       RETURNING id, nome, cognome, username, email, active, updated_at`,
       values
     )
+
+    // Aggiungi ruolo_id e nome_ruolo se aggiornati o fetchali di nuovo se serve
+    // Per semplicità, ritorniamo l'utente base aggiornato.
+    // Il frontend ricaricherà la lista.
 
     return NextResponse.json({
       success: true,
