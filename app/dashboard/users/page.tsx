@@ -29,6 +29,8 @@ interface User {
   nome_ruolo: string;
   ruolo_descrizione: string;
   livello_accesso: number;
+  valid_from?: string | null;
+  valid_until?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -106,6 +108,8 @@ export default function UsersPage() {
     text: string;
   } | null>(null);
 
+  const [isAdding, setIsAdding] = useState(false); // Flag per distinguere Aggiungi vs Modifica
+
   const fetchUsers = async () => {
     try {
       const response = await fetch("/api/users");
@@ -125,7 +129,8 @@ export default function UsersPage() {
   }, []);
 
   const handleAdd = () => {
-    setEditingUser(null);
+    setIsAdding(true); // Modalità creazione
+    setEditingUser({} as User); // Placeholder per far aprire il modal
     setEditForm({
       nome: "",
       cognome: "",
@@ -140,6 +145,7 @@ export default function UsersPage() {
   };
 
   const handleEdit = (user: User) => {
+    setIsAdding(false); // Modalità modifica
     setEditingUser(user);
     setEditForm({
       nome: user.nome,
@@ -149,6 +155,12 @@ export default function UsersPage() {
       password: "",
       ruolo_id: user.ruolo_id,
       active: user.active,
+      valid_from: user.valid_from
+        ? new Date(user.valid_from).toISOString().slice(0, 16)
+        : "",
+      valid_until: user.valid_until
+        ? new Date(user.valid_until).toISOString().slice(0, 16)
+        : "",
     });
   };
 
